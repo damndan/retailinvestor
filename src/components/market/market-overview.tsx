@@ -57,7 +57,7 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
         if (monthIndex === -1) return false;
         
         // Create date objects for comparison (using the 1st day of the month)
-        const chartDate = new Date(parseInt(year), monthIndex, 1);
+        const chartDate = new Date(parseInt(year), monthIndex);
         const selectedMonth = selectedDate.getMonth();
         const selectedYear = selectedDate.getFullYear();
         
