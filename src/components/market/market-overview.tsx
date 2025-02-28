@@ -49,11 +49,20 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
   // Filter chart data based on selected date
   const filteredChartData = selectedDate 
     ? chartData.filter(data => {
-        // Convert chart date string to Date for comparison
-        const chartDate = new Date(data.date);
-        const selectedDateString = selectedDate.toISOString().split('T')[0];
-        const chartDateString = chartDate.toISOString().split('T')[0];
-        return chartDateString === selectedDateString;
+        // Parse the chart data date string (format: "Jan 2019")
+        const [month, year] = data.date.split(' ');
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthIndex = months.indexOf(month);
+        
+        if (monthIndex === -1) return false;
+        
+        // Create date objects for comparison (using the 1st day of the month)
+        const chartDate = new Date(parseInt(year), monthIndex, 1);
+        const selectedMonth = selectedDate.getMonth();
+        const selectedYear = selectedDate.getFullYear();
+        
+        // Compare year and month only
+        return chartDate.getFullYear() === selectedYear && chartDate.getMonth() === selectedMonth;
       })
     : chartData;
 
@@ -73,7 +82,7 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
         </div>
         <CardDescription>
           {selectedDate 
-            ? `Market performance on ${selectedDate.toLocaleDateString()}`
+            ? `Market performance on ${selectedDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long' })}`
             : "Major indices performance"
           }
         </CardDescription>
@@ -85,7 +94,7 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
           </div>
         ) : (
           <MarketChart 
-            data={selectedDate ? filteredChartData : chartData} 
+            data={filteredChartData.length > 0 ? filteredChartData : chartData} 
             activeIndex={activeIndex} 
           />
         )}

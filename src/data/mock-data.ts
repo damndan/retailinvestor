@@ -11,7 +11,8 @@ export const buyRecommendations = [
     changePercent: 4.05,
     recommendation: "buy" as const,
     confidence: 88,
-    analysis: "Strong growth in government contracts and expansion into commercial sector. Increasing adoption of AI platforms positions Palantir well for future growth."
+    analysis: "Strong growth in government contracts and expansion into commercial sector. Increasing adoption of AI platforms positions Palantir well for future growth.",
+    date: "2024-01-15"
   },
   {
     symbol: "SOFI",
@@ -21,7 +22,8 @@ export const buyRecommendations = [
     changePercent: 4.13,
     recommendation: "buy" as const,
     confidence: 85,
-    analysis: "Digital banking growth, expanding product offerings, and improving profitability metrics. Bank charter and student loan recovery are positive catalysts."
+    analysis: "Digital banking growth, expanding product offerings, and improving profitability metrics. Bank charter and student loan recovery are positive catalysts.",
+    date: "2024-02-20"
   },
   {
     symbol: "AMD",
@@ -31,7 +33,8 @@ export const buyRecommendations = [
     changePercent: 1.34,
     recommendation: "buy" as const,
     confidence: 92,
-    analysis: "Market share gains against Intel, strong data center growth, and AI chip expansion make AMD a compelling investment in the semiconductor space."
+    analysis: "Market share gains against Intel, strong data center growth, and AI chip expansion make AMD a compelling investment in the semiconductor space.",
+    date: "2024-03-10"
   },
   {
     symbol: "CRSR",
@@ -41,7 +44,8 @@ export const buyRecommendations = [
     changePercent: 3.50,
     recommendation: "buy" as const,
     confidence: 84,
-    analysis: "Leading gaming peripherals company with strong brand loyalty. Expanding product portfolio and potential gaming market recovery provide upside potential."
+    analysis: "Leading gaming peripherals company with strong brand loyalty. Expanding product portfolio and potential gaming market recovery provide upside potential.",
+    date: "2024-07-01"
   }
 ];
 
@@ -55,7 +59,8 @@ export const sellRecommendations = [
     changePercent: -6.46,
     recommendation: "sell" as const,
     confidence: 78,
-    analysis: "Challenging retail environment, declining store traffic, and lack of clear turnaround strategy. Despite meme stock status, fundamentals remain weak."
+    analysis: "Challenging retail environment, declining store traffic, and lack of clear turnaround strategy. Despite meme stock status, fundamentals remain weak.",
+    date: "2024-01-05"
   },
   {
     symbol: "AMC",
@@ -65,7 +70,8 @@ export const sellRecommendations = [
     changePercent: -3.40,
     recommendation: "sell" as const,
     confidence: 76,
-    analysis: "High debt burden, ongoing cinema attendance challenges, and dilution of shareholders makes AMC's long-term viability questionable."
+    analysis: "High debt burden, ongoing cinema attendance challenges, and dilution of shareholders makes AMC's long-term viability questionable.",
+    date: "2024-02-15"
   },
   {
     symbol: "BBBY",
@@ -75,7 +81,8 @@ export const sellRecommendations = [
     changePercent: -20.00,
     recommendation: "sell" as const,
     confidence: 95,
-    analysis: "Bankruptcy proceedings and limited recovery potential for common shareholders. The company's restructuring is unlikely to generate value for current investors."
+    analysis: "Bankruptcy proceedings and limited recovery potential for common shareholders. The company's restructuring is unlikely to generate value for current investors.",
+    date: "2024-04-20"
   },
   {
     symbol: "HOOD",
@@ -85,7 +92,8 @@ export const sellRecommendations = [
     changePercent: -2.19,
     recommendation: "hold" as const,
     confidence: 62,
-    analysis: "Volatile trading revenue, regulatory challenges, and increasing competition in the retail brokerage space. However, growing crypto trading and cash management services provide some optimism."
+    analysis: "Volatile trading revenue, regulatory challenges, and increasing competition in the retail brokerage space. However, growing crypto trading and cash management services provide some optimism.",
+    date: "2024-07-10"
   }
 ];
 

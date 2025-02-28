@@ -1,187 +1,140 @@
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StockCard } from "@/components/stock-card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Summary } from "@/components/summary";
-import { MarketOverview } from "@/components/market/market-overview";
-import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-
-// Mock data
+import { cn } from "@/lib/utils";
+import { StockCard } from "@/components/stock-card";
+import { Summary } from "@/components/summary";
+import { MarketOverview } from "@/components/market/market-overview";
 import { buyRecommendations, sellRecommendations } from "@/data/mock-data";
-import { 
-  fetchRecommendations, 
-  updateRecommendationsWithRealData,
-  filterRecommendationsByDate,
-  StockRecommendation 
-} from "@/services/financial-service";
 
-interface DashboardProps {
-  className?: string;
-}
-
-export function Dashboard({ className }: DashboardProps) {
-  const [buyStocks, setBuyStocks] = useState<StockRecommendation[]>(buyRecommendations);
-  const [sellStocks, setSellStocks] = useState<StockRecommendation[]>(sellRecommendations);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+export function Dashboard() {
+  const [date, setDate] = useState<Date | null>(null);
+  const [buyRecs, setBuyRecs] = useState(buyRecommendations);
+  const [sellRecs, setSellRecs] = useState(sellRecommendations);
+  const [loading, setLoading] = useState(false);
+  const [noDataForDate, setNoDataForDate] = useState(false);
 
   useEffect(() => {
-    const fetchRealStockData = async () => {
+    const filterRecommendationsByDate = () => {
+      setLoading(true);
+      
       try {
-        setIsLoading(true);
-        
-        // Fetch recommendations
-        const { buy, sell } = await fetchRecommendations();
-        
-        // Apply date filtering if a date is selected
-        const filteredBuyStocks = filterRecommendationsByDate(buy, selectedDate);
-        const filteredSellStocks = filterRecommendationsByDate(sell, selectedDate);
-        
-        setBuyStocks(filteredBuyStocks);
-        setSellStocks(filteredSellStocks);
+        if (date) {
+          // Format the selected date as YYYY-MM for comparison
+          const selectedDateStr = format(date, 'yyyy-MM');
+          
+          // Filter buy recommendations by date (comparing only year and month)
+          const filteredBuyRecs = buyRecommendations.filter(rec => {
+            if (!rec.date) return false;
+            return rec.date.substring(0, 7) === selectedDateStr;
+          });
+          
+          // Filter sell recommendations by date (comparing only year and month)
+          const filteredSellRecs = sellRecommendations.filter(rec => {
+            if (!rec.date) return false;
+            return rec.date.substring(0, 7) === selectedDateStr;
+          });
+          
+          setBuyRecs(filteredBuyRecs);
+          setSellRecs(filteredSellRecs);
+          
+          // Set flag if no data for the selected date
+          setNoDataForDate(filteredBuyRecs.length === 0 && filteredSellRecs.length === 0);
+        } else {
+          // If no date selected, show all recommendations
+          setBuyRecs(buyRecommendations);
+          setSellRecs(sellRecommendations);
+          setNoDataForDate(false);
+        }
       } catch (error) {
-        console.error("Failed to fetch real stock data:", error);
-        
-        // Fallback to mock data with date filtering
-        const filteredBuyStocks = filterRecommendationsByDate(buyRecommendations, selectedDate);
-        const filteredSellStocks = filterRecommendationsByDate(sellRecommendations, selectedDate);
-        
-        setBuyStocks(filteredBuyStocks);
-        setSellStocks(filteredSellStocks);
+        console.error("Error filtering recommendations:", error);
+        // Fallback to all recommendations
+        setBuyRecs(buyRecommendations);
+        setSellRecs(sellRecommendations);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchRealStockData();
-  }, [selectedDate]);
-
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date || null);
-    setDatePopoverOpen(false);
-  };
-
-  const clearDate = () => {
-    setSelectedDate(null);
-    setDatePopoverOpen(false);
-  };
+    filterRecommendationsByDate();
+  }, [date]);
 
   return (
-    <div className={cn("grid lg:grid-cols-12 gap-6 p-6", className)}>
-      <div className="lg:col-span-8 space-y-6 animate-fade-in">
-        <Tabs defaultValue="buy" className="w-full">
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-4">
-              <h2 className="text-xl font-medium">Recommendations</h2>
-              <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "justify-start text-left font-normal",
-                      !selectedDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : "Select date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate || undefined}
-                    onSelect={handleDateSelect}
-                    initialFocus
-                  />
-                  {selectedDate && (
-                    <div className="p-2 border-t border-border">
-                      <Button 
-                        variant="ghost" 
-                        className="w-full justify-center" 
-                        onClick={clearDate}
-                      >
-                        Clear
-                      </Button>
-                    </div>
-                  )}
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="flex items-center">
-              {isLoading && (
-                <span className="text-xs text-muted-foreground mr-3">
-                  Fetching real-time data...
-                </span>
+    <div className="container py-6 space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h1 className="text-2xl font-bold tracking-tight">Financial Dashboard</h1>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[240px] justify-start text-left font-normal",
+                !date && "text-muted-foreground"
               )}
-              <TabsList>
-                <TabsTrigger value="buy">Buy</TabsTrigger>
-                <TabsTrigger value="sell">Sell</TabsTrigger>
-              </TabsList>
-            </div>
-          </div>
-
-          <TabsContent value="buy" className="mt-0">
-            <div className="grid sm:grid-cols-2 gap-4">
-              {buyStocks.length > 0 ? (
-                buyStocks.map((stock, index) => (
-                  <StockCard 
-                    key={stock.symbol} 
-                    stock={stock} 
-                    selectedDate={selectedDate}
-                    className={cn(
-                      "animate-fade-in",
-                      index === 0 ? "" : "animation-delay-200",
-                      index === 1 ? "animation-delay-200" : "",
-                      index === 2 ? "animation-delay-400" : "",
-                      index === 3 ? "animation-delay-600" : ""
-                    )} 
-                  />
-                ))
-              ) : (
-                <div className="col-span-2 text-center py-8 text-muted-foreground">
-                  No buy recommendations available for the selected date.
-                </div>
-              )}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="sell" className="mt-0">
-            <div className="grid sm:grid-cols-2 gap-4">
-              {sellStocks.length > 0 ? (
-                sellStocks.map((stock, index) => (
-                  <StockCard 
-                    key={stock.symbol} 
-                    stock={stock} 
-                    selectedDate={selectedDate}
-                    className={cn(
-                      "animate-fade-in",
-                      index === 0 ? "" : "animation-delay-200",
-                      index === 1 ? "animation-delay-200" : "",
-                      index === 2 ? "animation-delay-400" : "",
-                      index === 3 ? "animation-delay-600" : ""
-                    )} 
-                  />
-                ))
-              ) : (
-                <div className="col-span-2 text-center py-8 text-muted-foreground">
-                  No sell recommendations available for the selected date.
-                </div>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {date ? format(date, "PPP") : "Filter by date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
-      <div className="lg:col-span-4 space-y-6 animate-fade-in animation-delay-200">
-        <Summary />
-        <MarketOverview selectedDate={selectedDate} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <MarketOverview selectedDate={date} />
+          
+          {loading ? (
+            <div className="h-48 flex items-center justify-center">
+              <p className="text-muted-foreground">Loading recommendations...</p>
+            </div>
+          ) : noDataForDate ? (
+            <div className="h-48 flex items-center justify-center">
+              <p className="text-muted-foreground">No stock recommendations for the selected date.</p>
+            </div>
+          ) : (
+            <>
+              {/* Buy Recommendations */}
+              {buyRecs.length > 0 && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-3">Buy Recommendations</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {buyRecs.map((stock) => (
+                      <StockCard key={stock.symbol} stock={stock} selectedDate={date} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Sell Recommendations */}
+              {sellRecs.length > 0 && (
+                <div>
+                  <h2 className="text-xl font-semibold mb-3">Sell Recommendations</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {sellRecs.map((stock) => (
+                      <StockCard key={stock.symbol} stock={stock} selectedDate={date} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        
+        <div>
+          <Summary />
+        </div>
       </div>
     </div>
   );
