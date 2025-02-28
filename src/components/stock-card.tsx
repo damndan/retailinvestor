@@ -1,9 +1,8 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { ArrowDown, ArrowUp, Info, TrendingDown, TrendingUp } from "lucide-react";
+import { Info, TrendingDown, TrendingUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface StockCardProps {
@@ -87,7 +86,7 @@ export function StockCard({ stock, className }: StockCardProps) {
           {recommendationBadge()}
         </div>
       </CardHeader>
-      <CardContent className="p-4 pt-2">
+      <CardContent className="p-4 pt-2 pb-4">
         <div className="flex items-baseline justify-between mb-2">
           <span className="text-2xl font-medium">${stock.price.toFixed(2)}</span>
           <div className={cn(
@@ -111,11 +110,6 @@ export function StockCard({ stock, className }: StockCardProps) {
           </p>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0">
-        <Button className="w-full" variant={stock.recommendation === "buy" ? "default" : "outline"}>
-          View Analysis
-        </Button>
-      </CardFooter>
     </Card>
   );
 }
