@@ -113,43 +113,73 @@ export const marketOverviewData = {
   ],
   chart: [
     {
-      date: "Apr 1",
-      sp500: 5200,
-      nasdaq: 16800,
-      dowjones: 39250
+      date: "Jan 2019",
+      sp500: 2704,
+      nasdaq: 7281,
+      dowjones: 24999
     },
     {
-      date: "Apr 5",
-      sp500: 5275,
-      nasdaq: 17100,
-      dowjones: 39500
+      date: "Jul 2019",
+      sp500: 2980,
+      nasdaq: 8175,
+      dowjones: 26864
     },
     {
-      date: "Apr 10",
-      sp500: 5320,
-      nasdaq: 17300,
-      dowjones: 39800
+      date: "Jan 2020",
+      sp500: 3225,
+      nasdaq: 9150,
+      dowjones: 28256
     },
     {
-      date: "Apr 15",
-      sp500: 5380,
-      nasdaq: 17500,
-      dowjones: 40200
+      date: "Jul 2020",
+      sp500: 3271,
+      nasdaq: 10745,
+      dowjones: 26428
     },
     {
-      date: "Apr 20",
-      sp500: 5450,
-      nasdaq: 17800,
-      dowjones: 41000
+      date: "Jan 2021",
+      sp500: 3714,
+      nasdaq: 13070,
+      dowjones: 29982
     },
     {
-      date: "Apr 25",
-      sp500: 5550,
-      nasdaq: 18000,
-      dowjones: 41600
+      date: "Jul 2021",
+      sp500: 4395,
+      nasdaq: 14672,
+      dowjones: 34935
     },
     {
-      date: "Apr 30",
+      date: "Jan 2022",
+      sp500: 4515,
+      nasdaq: 14239,
+      dowjones: 35131
+    },
+    {
+      date: "Jul 2022",
+      sp500: 4130,
+      nasdaq: 12390,
+      dowjones: 32845
+    },
+    {
+      date: "Jan 2023",
+      sp500: 3978,
+      nasdaq: 11621,
+      dowjones: 33945
+    },
+    {
+      date: "Jul 2023",
+      sp500: 4588,
+      nasdaq: 14346,
+      dowjones: 35459
+    },
+    {
+      date: "Jan 2024",
+      sp500: 4845,
+      nasdaq: 15628,
+      dowjones: 38150
+    },
+    {
+      date: "Jul 2024",
       sp500: 5629,
       nasdaq: 18287,
       dowjones: 42185
