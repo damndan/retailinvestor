@@ -5,7 +5,7 @@ import { MarketIndex, ChartData } from '../types/market-types';
 import { fetchStockPrice } from '../api/stock-api';
 import { marketOverviewData } from '@/data/mock-data';
 
-// Fetch market indices data using Yahoo Finance symbols
+// Fetch market indices data using our stock API
 export const fetchMarketIndices = async (): Promise<MarketIndex[]> => {
   try {
     // Fetch data for the actual indices
