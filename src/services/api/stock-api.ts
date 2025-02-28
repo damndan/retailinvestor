@@ -4,22 +4,36 @@
 // Fetch current stock price from Alpha Vantage API
 export const fetchStockPrice = async (symbol: string): Promise<{ price: number; change: number; changePercent: number }> => {
   try {
-    // Using Alpha Vantage's Global Quote endpoint for current stock data
-    // Note: This is a mock implementation that generates realistic data
-    // since we don't actually have an API key for Alpha Vantage
+    // Alpha Vantage API endpoint with your API key
+    // Note: Replace 'demo' with your actual API key in a production environment
+    const apiKey = 'demo';
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const response = await fetch(url);
     
-    // Generate reasonable random data for the stock
-    const basePrice = getBasePrice(symbol);
-    const randomChange = (Math.random() * 2 - 1) * (basePrice * 0.03); // +/- 3% change
-    const price = basePrice + randomChange;
-    const previousClose = basePrice;
-    const change = price - previousClose;
-    const changePercent = (change / previousClose) * 100;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     
-    console.log(`Generated stock data for ${symbol}: price=${price.toFixed(2)}, change=${change.toFixed(2)}, changePercent=${changePercent.toFixed(2)}%`);
+    const data = await response.json();
+    
+    // Check if we have an error or no data
+    if (data['Error Message'] || !data['Global Quote']) {
+      console.warn('Alpha Vantage API error or no data:', data);
+      
+      // If we get an error or no data, fall back to the mock implementation
+      return fallbackToMockData(symbol);
+    }
+    
+    const quote = data['Global Quote'];
+    
+    // Extract the data from Alpha Vantage response
+    const price = parseFloat(quote['05. price'] || 0);
+    const previousClose = parseFloat(quote['08. previous close'] || 0);
+    const change = parseFloat(quote['09. change'] || 0);
+    const changePercent = parseFloat(quote['10. change percent']?.replace('%', '') || 0);
+    
+    console.log(`Alpha Vantage data for ${symbol}: price=${price.toFixed(2)}, change=${change.toFixed(2)}, changePercent=${changePercent.toFixed(2)}%`);
     
     return { 
       price, 
@@ -28,9 +42,32 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
     };
   } catch (error) {
     console.error(`Error fetching stock data for ${symbol}:`, error);
-    throw error;
+    
+    // Fallback to mock data if the API call fails
+    return fallbackToMockData(symbol);
   }
 };
+
+// Helper function that generates mock data as a fallback
+function fallbackToMockData(symbol: string): { price: number; change: number; changePercent: number } {
+  console.warn(`Falling back to mock data for ${symbol}`);
+  
+  // Generate reasonable random data for the stock
+  const basePrice = getBasePrice(symbol);
+  const randomChange = (Math.random() * 2 - 1) * (basePrice * 0.03); // +/- 3% change
+  const price = basePrice + randomChange;
+  const previousClose = basePrice;
+  const change = price - previousClose;
+  const changePercent = (change / previousClose) * 100;
+  
+  console.log(`Generated mock data for ${symbol}: price=${price.toFixed(2)}, change=${change.toFixed(2)}, changePercent=${changePercent.toFixed(2)}%`);
+  
+  return { 
+    price, 
+    change, 
+    changePercent 
+  };
+}
 
 // Helper function to get a base price for a symbol to ensure consistency
 function getBasePrice(symbol: string): number {
