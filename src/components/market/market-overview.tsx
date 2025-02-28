@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -22,6 +23,7 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
   const [indices, setIndices] = useState<MarketIndex[]>(marketOverviewData.indices);
   const [chartData, setChartData] = useState<ChartData[]>(marketOverviewData.chart);
   const [isLoading, setIsLoading] = useState(true);
+  const [originalChartData, setOriginalChartData] = useState<ChartData[]>(marketOverviewData.chart);
 
   const getAdjustedChartData = (allData: ChartData[], date?: Date): ChartData[] => {
     if (!date) return allData;
@@ -52,10 +54,12 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
         
         const generatedChartData = generateChartData(marketIndices);
         setChartData(generatedChartData);
+        setOriginalChartData(generatedChartData);
       } catch (error) {
         console.error("Failed to fetch market data:", error);
         setIndices(marketOverviewData.indices);
         setChartData(marketOverviewData.chart);
+        setOriginalChartData(marketOverviewData.chart);
       } finally {
         setIsLoading(false);
       }
@@ -65,11 +69,11 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
   }, []);
 
   useEffect(() => {
-    const adjustedData = getAdjustedChartData(chartData, selectedDate);
-    if (adjustedData.length > 0) {
+    if (originalChartData.length > 0) {
+      const adjustedData = getAdjustedChartData(originalChartData, selectedDate);
       setChartData(adjustedData);
     }
-  }, [selectedDate]);
+  }, [selectedDate, originalChartData]);
 
   return (
     <Card className="glass-card border">
