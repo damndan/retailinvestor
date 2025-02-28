@@ -1,15 +1,15 @@
 
 // API functions for fetching stock prices
 
-// Fetch current stock price from Finnhub API
+// Fetch current stock price from Alpha Vantage API
 export const fetchStockPrice = async (symbol: string): Promise<{ price: number; change: number; changePercent: number }> => {
   try {
     // For market indices, we need to handle special symbols
     const apiSymbol = transformSymbolForAPI(symbol);
     
-    // Finnhub API endpoint with API key
-    const apiKey = 'cm048t1r01ql4pjlpb4gcm048t1r01ql4pjlpb50';
-    const url = `https://finnhub.io/api/v1/quote?symbol=${apiSymbol}&token=${apiKey}`;
+    // Alpha Vantage API endpoint with your API key
+    const apiKey = '5WT0020K9F27J3RF';
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${apiSymbol}&apikey=${apiKey}`;
     
     console.log(`Fetching stock data for ${symbol} (API symbol: ${apiSymbol})...`);
     const response = await fetch(url);
@@ -22,21 +22,22 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
     const data = await response.json();
     
     // Check if we have valid data
-    if (!data || data.error || !data.c) {
-      console.warn('Finnhub API error or no data:', data);
+    if (data['Error Message'] || !data['Global Quote'] || Object.keys(data['Global Quote']).length === 0) {
+      console.warn('Alpha Vantage API error or no data:', data);
       
       // If we get an error or no data, fall back to the mock implementation
       return fallbackToMockData(symbol);
     }
     
-    // Extract the data from Finnhub response
-    // c = current price, pc = previous close, d = change, dp = percent change
-    const price = parseFloat(data.c || 0);
-    const previousClose = parseFloat(data.pc || 0);
-    const change = parseFloat(data.d || 0);
-    const changePercent = parseFloat(data.dp || 0);
+    const quote = data['Global Quote'];
     
-    console.log(`Finnhub data for ${symbol}: price=${price.toFixed(2)}, change=${change.toFixed(2)}, changePercent=${changePercent.toFixed(2)}%`);
+    // Extract the data from Alpha Vantage response
+    const price = parseFloat(quote['05. price'] || 0);
+    const previousClose = parseFloat(quote['08. previous close'] || 0);
+    const change = parseFloat(quote['09. change'] || 0);
+    const changePercent = parseFloat(quote['10. change percent']?.replace('%', '') || 0);
+    
+    console.log(`Alpha Vantage data for ${symbol}: price=${price.toFixed(2)}, change=${change.toFixed(2)}, changePercent=${changePercent.toFixed(2)}%`);
     
     return { 
       price, 
@@ -53,10 +54,10 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
 
 // Transform symbols for the API (different APIs use different formats for indices)
 function transformSymbolForAPI(symbol: string): string {
-  // Convert standard index symbols to Finnhub format
-  if (symbol === '^GSPC') return 'SPX'; // S&P 500
-  if (symbol === '^IXIC') return 'NDX'; // NASDAQ (using Nasdaq-100 as proxy)
-  if (symbol === '^DJI') return 'DJI';  // Dow Jones
+  // Convert standard index symbols to Alpha Vantage format
+  if (symbol === '^GSPC') return 'SPY'; // S&P 500 (using SPY ETF as proxy)
+  if (symbol === '^IXIC') return 'QQQ'; // NASDAQ (using QQQ ETF as proxy)
+  if (symbol === '^DJI') return 'DIA';  // Dow Jones (using DIA ETF as proxy)
   
   return symbol; // For regular stock symbols, no change needed
 }
