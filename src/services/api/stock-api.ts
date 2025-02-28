@@ -9,7 +9,7 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
     
     // Alpha Vantage API endpoint with your API key
     const apiKey = '5WT0020K9F27J3RF';
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${apiSymbol}&apikey=${apiKey}`;
+    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${apiSymbol}&interval=1min&apikey=${apiKey}`;
     
     console.log(`Fetching stock data for ${symbol} (API symbol: ${apiSymbol})...`);
     const response = await fetch(url);
@@ -22,20 +22,32 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
     const data = await response.json();
     
     // Check if we have valid data
-    if (data['Error Message'] || !data['Global Quote'] || Object.keys(data['Global Quote']).length === 0) {
+    if (data['Error Message'] || !data['Time Series (1min)'] || Object.keys(data['Time Series (1min)']).length === 0) {
       console.warn('Alpha Vantage API error or no data:', data);
       
       // If we get an error or no data, fall back to the mock implementation
       return fallbackToMockData(symbol);
     }
     
-    const quote = data['Global Quote'];
+    // Get the most recent data point
+    const timeSeriesData = data['Time Series (1min)'];
+    const latestTimestamp = Object.keys(timeSeriesData)[0]; // First key is the most recent
+    const latestData = timeSeriesData[latestTimestamp];
     
-    // Extract the data from Alpha Vantage response
-    const price = parseFloat(quote['05. price'] || 0);
-    const previousClose = parseFloat(quote['08. previous close'] || 0);
-    const change = parseFloat(quote['09. change'] || 0);
-    const changePercent = parseFloat(quote['10. change percent']?.replace('%', '') || 0);
+    // Extract the data from the most recent data point
+    const price = parseFloat(latestData['4. close'] || 0);
+    
+    // For change, we need to compare with the previous data point
+    const previousTimestamp = Object.keys(timeSeriesData)[1]; // Second key is the previous minute
+    let change = 0;
+    let changePercent = 0;
+    
+    if (previousTimestamp) {
+      const previousData = timeSeriesData[previousTimestamp];
+      const previousPrice = parseFloat(previousData['4. close'] || 0);
+      change = price - previousPrice;
+      changePercent = (change / previousPrice) * 100;
+    }
     
     console.log(`Alpha Vantage data for ${symbol}: price=${price.toFixed(2)}, change=${change.toFixed(2)}, changePercent=${changePercent.toFixed(2)}%`);
     
