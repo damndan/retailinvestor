@@ -1,12 +1,12 @@
 
+
 // API functions for fetching stock prices
 
 // Fetch current stock price from Alpha Vantage API
 export const fetchStockPrice = async (symbol: string): Promise<{ price: number; change: number; changePercent: number }> => {
   try {
     // Alpha Vantage API endpoint with your API key
-    // Replace this with your actual Alpha Vantage API key
-    const apiKey = 'YOUR_ALPHA_VANTAGE_API_KEY';
+    const apiKey = '5WT0020K9F27J3RF';
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
     
     const response = await fetch(url);
@@ -87,3 +87,4 @@ function getBasePrice(symbol: string): number {
   // Generate a price between $10 and $500
   return Math.abs(hash % 490) + 10;
 }
+
