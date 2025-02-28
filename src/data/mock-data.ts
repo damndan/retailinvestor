@@ -4,88 +4,88 @@
 // Buy recommendations
 export const buyRecommendations = [
   {
-    symbol: "AAPL",
-    name: "Apple Inc.",
-    price: 187.68,
-    change: 1.24,
-    changePercent: 0.66,
+    symbol: "PLTR",
+    name: "Palantir Technologies Inc.",
+    price: 22.35,
+    change: 0.87,
+    changePercent: 4.05,
+    recommendation: "buy" as const,
+    confidence: 88,
+    analysis: "Strong growth in government contracts and expansion into commercial sector. Increasing adoption of AI platforms positions Palantir well for future growth."
+  },
+  {
+    symbol: "SOFI",
+    name: "SoFi Technologies, Inc.",
+    price: 7.82,
+    change: 0.31,
+    changePercent: 4.13,
+    recommendation: "buy" as const,
+    confidence: 85,
+    analysis: "Digital banking growth, expanding product offerings, and improving profitability metrics. Bank charter and student loan recovery are positive catalysts."
+  },
+  {
+    symbol: "AMD",
+    name: "Advanced Micro Devices, Inc.",
+    price: 164.75,
+    change: 2.18,
+    changePercent: 1.34,
     recommendation: "buy" as const,
     confidence: 92,
-    analysis: "Strong earnings, new product cycle, and service growth makes Apple a compelling buy. The company's ecosystem continues to expand with high customer retention."
+    analysis: "Market share gains against Intel, strong data center growth, and AI chip expansion make AMD a compelling investment in the semiconductor space."
   },
   {
-    symbol: "MSFT",
-    name: "Microsoft Corporation",
-    price: 412.76,
-    change: 2.86,
-    changePercent: 0.70,
+    symbol: "CRSR",
+    name: "Corsair Gaming, Inc.",
+    price: 11.24,
+    change: 0.38,
+    changePercent: 3.50,
     recommendation: "buy" as const,
-    confidence: 89,
-    analysis: "Cloud growth, AI integration and enterprise dominance position Microsoft for continued outperformance. The Azure platform shows exceptional momentum."
-  },
-  {
-    symbol: "NVDA",
-    name: "NVIDIA Corporation",
-    price: 868.95,
-    change: 15.32,
-    changePercent: 1.79,
-    recommendation: "buy" as const,
-    confidence: 95,
-    analysis: "Leading AI chip provider with unmatched growth in data center and gaming. The company's technology lead in AI acceleration creates a significant moat."
-  },
-  {
-    symbol: "AMZN",
-    name: "Amazon.com, Inc.",
-    price: 176.85,
-    change: 0.47,
-    changePercent: 0.27,
-    recommendation: "buy" as const,
-    confidence: 87,
-    analysis: "E-commerce dominance, AWS growth, and advertising expansion create multiple revenue streams. The company continues to innovate across all business segments."
+    confidence: 84,
+    analysis: "Leading gaming peripherals company with strong brand loyalty. Expanding product portfolio and potential gaming market recovery provide upside potential."
   }
 ];
 
 // Sell recommendations
 export const sellRecommendations = [
   {
-    symbol: "XOM",
-    name: "Exxon Mobil Corporation",
-    price: 116.01,
-    change: -1.95,
-    changePercent: -1.65,
+    symbol: "GME",
+    name: "GameStop Corp.",
+    price: 15.21,
+    change: -1.05,
+    changePercent: -6.46,
     recommendation: "sell" as const,
     confidence: 78,
-    analysis: "Facing significant challenges from energy transition and regulatory pressure. The company's long-term growth prospects are limited by global shifts away from fossil fuels."
+    analysis: "Challenging retail environment, declining store traffic, and lack of clear turnaround strategy. Despite meme stock status, fundamentals remain weak."
   },
   {
-    symbol: "CVX",
-    name: "Chevron Corporation",
-    price: 155.59,
-    change: -2.10,
-    changePercent: -1.33,
+    symbol: "AMC",
+    name: "AMC Entertainment Holdings, Inc.",
+    price: 4.26,
+    change: -0.15,
+    changePercent: -3.40,
     recommendation: "sell" as const,
     confidence: 76,
-    analysis: "Declining profit margins, regulatory headwinds, and increasing competition from renewable energy. The company faces significant transition risks."
+    analysis: "High debt burden, ongoing cinema attendance challenges, and dilution of shareholders makes AMC's long-term viability questionable."
   },
   {
-    symbol: "BA",
-    name: "The Boeing Company",
-    price: 179.54,
-    change: -5.23,
-    changePercent: -2.83,
+    symbol: "BBBY",
+    name: "Bed Bath & Beyond Inc.",
+    price: 0.04,
+    change: -0.01,
+    changePercent: -20.00,
     recommendation: "sell" as const,
-    confidence: 83,
-    analysis: "Ongoing safety concerns, production issues, and competitive pressures from Airbus. The company faces significant challenges in regaining market trust."
+    confidence: 95,
+    analysis: "Bankruptcy proceedings and limited recovery potential for common shareholders. The company's restructuring is unlikely to generate value for current investors."
   },
   {
-    symbol: "KO",
-    name: "The Coca-Cola Company",
-    price: 60.72,
-    change: -0.18,
-    changePercent: -0.30,
+    symbol: "HOOD",
+    name: "Robinhood Markets, Inc.",
+    price: 18.75,
+    change: -0.42,
+    changePercent: -2.19,
     recommendation: "hold" as const,
     confidence: 62,
-    analysis: "Slowing growth, changing consumer preferences toward healthier options, and increasing competition. However, strong brand and dividends provide some stability."
+    analysis: "Volatile trading revenue, regulatory challenges, and increasing competition in the retail brokerage space. However, growing crypto trading and cash management services provide some optimism."
   }
 ];
 

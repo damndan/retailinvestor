@@ -15,9 +15,21 @@ interface DashboardProps {
   className?: string;
 }
 
+// Define a generic StockRecommendation type that can handle all recommendation types
+interface StockRecommendation {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  recommendation: "buy" | "sell" | "hold";
+  confidence: number;
+  analysis: string;
+}
+
 export function Dashboard({ className }: DashboardProps) {
-  const [buyStocks, setBuyStocks] = useState(buyRecommendations);
-  const [sellStocks, setSellStocks] = useState(sellRecommendations);
+  const [buyStocks, setBuyStocks] = useState<StockRecommendation[]>(buyRecommendations);
+  const [sellStocks, setSellStocks] = useState<StockRecommendation[]>(sellRecommendations);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

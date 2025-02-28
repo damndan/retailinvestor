@@ -28,6 +28,18 @@ export interface ChartData {
   dowjones: number;
 }
 
+// Define a generic StockRecommendation type
+export interface StockRecommendation {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  recommendation: "buy" | "sell" | "hold";
+  confidence: number;
+  analysis: string;
+}
+
 // Function to fetch real-time quote for a stock
 export const fetchStockQuote = async (symbol: string): Promise<StockQuote | null> => {
   try {
@@ -175,8 +187,8 @@ export const generateChartData = (indices: MarketIndex[]): ChartData[] => {
 
 // Function to update stock recommendation data with real-time prices
 export const updateRecommendationsWithRealData = async (
-  recommendations: typeof buyRecommendations
-) => {
+  recommendations: StockRecommendation[]
+): Promise<StockRecommendation[]> => {
   const updatedRecommendations = [...recommendations];
   
   // Process stocks in sequence to avoid API rate limiting
