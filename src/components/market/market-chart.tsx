@@ -52,7 +52,6 @@ export function MarketChart({ data, activeIndex }: MarketChartProps) {
             tickLine={false}
             axisLine={false}
             tickMargin={5}
-            tickFormatter={(value) => value.split(' ')[1]} // Show only year part
           />
           <YAxis 
             stroke="hsl(var(--muted-foreground))" 
@@ -76,8 +75,6 @@ export function MarketChart({ data, activeIndex }: MarketChartProps) {
               color: getLineColor(activeIndex),
               fontSize: '12px',
             }}
-            formatter={(value: number) => [`${value.toLocaleString()}`, activeIndex.toUpperCase()]}
-            labelFormatter={(label) => label}
           />
           {activeIndex === "sp500" && (
             <Area
