@@ -2,7 +2,7 @@
 // Main financial service that re-exports all services
 
 // Re-export types
-export type { 
+export { 
   MarketIndex, 
   ChartData, 
   StockRecommendation 
