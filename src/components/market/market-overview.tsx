@@ -13,7 +13,11 @@ import {
 } from "@/services/financial-service";
 import { marketOverviewData } from "@/data/mock-data";
 
-export function MarketOverview() {
+interface MarketOverviewProps {
+  selectedDate?: Date | null;
+}
+
+export function MarketOverview({ selectedDate }: MarketOverviewProps) {
   const [activeIndex, setActiveIndex] = useState("sp500");
   const [indices, setIndices] = useState<MarketIndex[]>(marketOverviewData.indices);
   const [chartData, setChartData] = useState<ChartData[]>(marketOverviewData.chart);
@@ -40,7 +44,21 @@ export function MarketOverview() {
     };
 
     fetchData();
-  }, []);
+  }, [selectedDate]);
+
+  // Filter chart data based on selected date
+  const filteredChartData = selectedDate 
+    ? chartData.filter(data => {
+        // Convert chart date string to Date for comparison
+        const chartDate = new Date(data.date);
+        const selectedDateString = selectedDate.toISOString().split('T')[0];
+        const chartDateString = chartDate.toISOString().split('T')[0];
+        return chartDateString === selectedDateString;
+      })
+    : chartData;
+
+  // If there's a selected date but no matching chart data, show a message
+  const noDataForSelectedDate = selectedDate && filteredChartData.length === 0;
 
   return (
     <Card className="glass-card border">
@@ -53,10 +71,24 @@ export function MarketOverview() {
           </CardTitle>
           <MarketIndexButtons activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
         </div>
-        <CardDescription>Major indices performance</CardDescription>
+        <CardDescription>
+          {selectedDate 
+            ? `Market performance on ${selectedDate.toLocaleDateString()}`
+            : "Major indices performance"
+          }
+        </CardDescription>
       </CardHeader>
       <CardContent className="px-3">
-        <MarketChart data={chartData} activeIndex={activeIndex} />
+        {noDataForSelectedDate ? (
+          <div className="h-[180px] flex items-center justify-center text-muted-foreground">
+            No market data available for the selected date
+          </div>
+        ) : (
+          <MarketChart 
+            data={selectedDate ? filteredChartData : chartData} 
+            activeIndex={activeIndex} 
+          />
+        )}
         <MarketIndices indices={indices} />
       </CardContent>
     </Card>

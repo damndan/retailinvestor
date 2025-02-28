@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Info, TrendingDown, TrendingUp } from "lucide-react";
+import { CalendarDays, Info, TrendingDown, TrendingUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface StockCardProps {
@@ -15,11 +15,13 @@ interface StockCardProps {
     recommendation: "buy" | "sell" | "hold";
     confidence: number;
     analysis: string;
+    date?: string;
   };
+  selectedDate?: Date | null;
   className?: string;
 }
 
-export function StockCard({ stock, className }: StockCardProps) {
+export function StockCard({ stock, selectedDate, className }: StockCardProps) {
   const isPositive = stock.change >= 0;
   
   const confidenceLevel = () => {
@@ -55,6 +57,9 @@ export function StockCard({ stock, className }: StockCardProps) {
       </Badge>
     );
   };
+
+  // Format the recommendation date for display
+  const formattedDate = stock.date ? new Date(stock.date).toLocaleDateString() : null;
 
   return (
     <Card className={cn("overflow-hidden glass-card border transition-all hover:shadow-md", className)}>
@@ -105,6 +110,14 @@ export function StockCard({ stock, className }: StockCardProps) {
               {confidenceLevel()} ({stock.confidence}%)
             </Badge>
           </div>
+          
+          {formattedDate && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <CalendarDays className="h-3 w-3" />
+              <span>Recommendation as of {formattedDate}</span>
+            </div>
+          )}
+          
           <p className="text-sm text-muted-foreground leading-relaxed">
             {stock.analysis.length > 120 ? `${stock.analysis.substring(0, 120)}...` : stock.analysis}
           </p>

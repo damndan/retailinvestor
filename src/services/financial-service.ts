@@ -25,6 +25,7 @@ export interface StockRecommendation {
   recommendation: 'buy' | 'sell' | 'hold';
   confidence: number;
   analysis: string;
+  date?: string; // Date when this recommendation was made
 }
 
 // API key for Alpha Vantage (free tier)
@@ -54,15 +55,12 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
   }
 };
 
-// Fetch recommendations with live stock data
-export const fetchRecommendations = async (): Promise<{
-  buy: StockRecommendation[];
-  sell: StockRecommendation[];
-}> => {
+// Update recommendations with real data
+export const updateRecommendationsWithRealData = async (recommendations: StockRecommendation[]): Promise<StockRecommendation[]> => {
   try {
-    // Update buy recommendations with live data
-    const updatedBuyRecs = await Promise.all(
-      buyRecommendations.map(async (stock) => {
+    // Update recommendations with live data
+    const updatedRecs = await Promise.all(
+      recommendations.map(async (stock) => {
         try {
           const liveData = await fetchStockPrice(stock.symbol);
           return { ...stock, ...liveData };
@@ -73,18 +71,40 @@ export const fetchRecommendations = async (): Promise<{
       })
     );
     
+    return updatedRecs;
+  } catch (error) {
+    console.error('Error updating recommendations:', error);
+    // Fallback to original data
+    return recommendations;
+  }
+};
+
+// Filter recommendations by date
+export const filterRecommendationsByDate = (recommendations: StockRecommendation[], selectedDate: Date | null): StockRecommendation[] => {
+  if (!selectedDate) {
+    return recommendations;
+  }
+  
+  const dateString = selectedDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  
+  // If recommendation has a date field, filter by it
+  return recommendations.filter(rec => {
+    if (!rec.date) return true; // Include recommendations without dates
+    return rec.date === dateString;
+  });
+};
+
+// Fetch recommendations with live stock data
+export const fetchRecommendations = async (): Promise<{
+  buy: StockRecommendation[];
+  sell: StockRecommendation[];
+}> => {
+  try {
+    // Update buy recommendations with live data
+    const updatedBuyRecs = await updateRecommendationsWithRealData(buyRecommendations);
+    
     // Update sell recommendations with live data
-    const updatedSellRecs = await Promise.all(
-      sellRecommendations.map(async (stock) => {
-        try {
-          const liveData = await fetchStockPrice(stock.symbol);
-          return { ...stock, ...liveData };
-        } catch (error) {
-          console.warn(`Falling back to mock data for ${stock.symbol}`);
-          return stock;
-        }
-      })
-    );
+    const updatedSellRecs = await updateRecommendationsWithRealData(sellRecommendations);
     
     return {
       buy: updatedBuyRecs,
