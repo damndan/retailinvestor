@@ -1,32 +1,46 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MarketChart } from "./market-chart";
 import { MarketIndexButtons } from "./market-index-buttons";
 import { MarketIndices } from "./market-indices";
+import { 
+  fetchMarketIndices, 
+  generateChartData, 
+  MarketIndex,
+  ChartData 
+} from "@/services/financial-service";
+import { marketOverviewData } from "@/data/mock-data";
 
-interface MarketData {
-  name: string;
-  value: number;
-  prevValue: number;
-  change: number;
-}
-
-export interface MarketOverviewProps {
-  data: {
-    indices: MarketData[];
-    chart: Array<{
-      date: string;
-      sp500: number;
-      nasdaq: number;
-      dowjones: number;
-    }>;
-  };
-}
-
-export function MarketOverview({ data }: MarketOverviewProps) {
+export function MarketOverview() {
   const [activeIndex, setActiveIndex] = useState("sp500");
+  const [indices, setIndices] = useState<MarketIndex[]>(marketOverviewData.indices);
+  const [chartData, setChartData] = useState<ChartData[]>(marketOverviewData.chart);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const marketIndices = await fetchMarketIndices();
+        setIndices(marketIndices);
+        
+        // Generate chart data based on current indices
+        const generatedChartData = generateChartData(marketIndices);
+        setChartData(generatedChartData);
+      } catch (error) {
+        console.error("Failed to fetch market data:", error);
+        // Fallback to mock data
+        setIndices(marketOverviewData.indices);
+        setChartData(marketOverviewData.chart);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Card className="glass-card border">
@@ -35,14 +49,15 @@ export function MarketOverview({ data }: MarketOverviewProps) {
           <CardTitle className="text-lg flex items-center gap-2">
             <BarChart className="h-4 w-4 text-info" />
             Market Overview
+            {isLoading && <span className="text-xs text-muted-foreground ml-2">(Loading...)</span>}
           </CardTitle>
           <MarketIndexButtons activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
         </div>
         <CardDescription>Major indices performance</CardDescription>
       </CardHeader>
       <CardContent className="px-3">
-        <MarketChart data={data.chart} activeIndex={activeIndex} />
-        <MarketIndices indices={data.indices} />
+        <MarketChart data={chartData} activeIndex={activeIndex} />
+        <MarketIndices indices={indices} />
       </CardContent>
     </Card>
   );
