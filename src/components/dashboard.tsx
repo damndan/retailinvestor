@@ -10,6 +10,8 @@ import { StockCard } from "@/components/stock-card";
 import { Summary } from "@/components/summary";
 import { MarketOverview } from "@/components/market/market-overview";
 import { buyRecommendations, sellRecommendations } from "@/data/mock-data";
+import { NewsArticle } from "@/components/news-article";
+import { mockNewsArticles } from "@/data/mock-news";
 
 export function Dashboard() {
   const [date, setDate] = useState<Date | null>(null);
@@ -17,6 +19,7 @@ export function Dashboard() {
   const [sellRecs, setSellRecs] = useState(sellRecommendations);
   const [loading, setLoading] = useState(false);
   const [noDataForDate, setNoDataForDate] = useState(false);
+  const [newsArticles, setNewsArticles] = useState(mockNewsArticles);
 
   // Check if a date is today (same year, month, and day)
   const isToday = (date: Date): boolean => {
@@ -86,6 +89,27 @@ export function Dashboard() {
   const handleClearDate = () => {
     setDate(null);
   };
+
+  // Fetch news articles daily
+  useEffect(() => {
+    const fetchNewsArticles = () => {
+      // In a real app, this would be an API call to get the latest news
+      // For now, we'll just simulate with our mock data
+      setNewsArticles(mockNewsArticles);
+    };
+
+    // Initial fetch
+    fetchNewsArticles();
+
+    // Set up a timer to check for news updates every 30 minutes
+    const newsUpdateInterval = setInterval(() => {
+      fetchNewsArticles();
+    }, 30 * 60 * 1000); // 30 minutes
+
+    return () => {
+      clearInterval(newsUpdateInterval);
+    };
+  }, []);
 
   return (
     <div className="container py-6 space-y-6">
@@ -167,6 +191,16 @@ export function Dashboard() {
               )}
             </>
           )}
+          
+          {/* News Articles Section */}
+          <div>
+            <h2 className="text-xl font-semibold mb-3">Latest Market News</h2>
+            <div className="space-y-4">
+              {newsArticles.map((article) => (
+                <NewsArticle key={article.id} article={article} />
+              ))}
+            </div>
+          </div>
         </div>
         
         <div>
