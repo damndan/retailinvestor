@@ -29,24 +29,49 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
       return fallbackToMockData(symbol);
     }
     
-    // Get the most recent data point
+    // Get all the data points for today
     const timeSeriesData = data['Time Series (1min)'];
-    const latestTimestamp = Object.keys(timeSeriesData)[0]; // First key is the most recent
-    const latestData = timeSeriesData[latestTimestamp];
+    const today = new Date();
+    const todayDateString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
     
-    // Extract the open price from the most recent data point
+    console.log(`Looking for data points for today (${todayDateString})...`);
+    
+    // Filter timestamps for today only
+    const todayTimestamps = Object.keys(timeSeriesData).filter(timestamp => 
+      timestamp.startsWith(todayDateString)
+    );
+    
+    if (todayTimestamps.length === 0) {
+      console.warn(`No data points found for today (${todayDateString}). Falling back to mock data.`);
+      return fallbackToMockData(symbol);
+    }
+    
+    // Sort timestamps to get the earliest and second earliest for today
+    todayTimestamps.sort();
+    const earliestTimestamp = todayTimestamps[0];
+    const secondEarliestTimestamp = todayTimestamps.length > 1 ? todayTimestamps[1] : null;
+    
+    const latestData = timeSeriesData[earliestTimestamp];
+    console.log(`Using earliest data point for today: ${earliestTimestamp}`);
+    
+    // Extract the open price from the earliest data point of today
     const price = parseFloat(latestData['1. open'] || 0);
     
-    // For change, we need to compare with the previous data point
-    const previousTimestamp = Object.keys(timeSeriesData)[1]; // Second key is the previous minute
+    // For change, we need to compare with the previous data point if available
     let change = 0;
     let changePercent = 0;
     
-    if (previousTimestamp) {
-      const previousData = timeSeriesData[previousTimestamp];
+    if (secondEarliestTimestamp) {
+      const previousData = timeSeriesData[secondEarliestTimestamp];
       const previousPrice = parseFloat(previousData['1. open'] || 0);
       change = price - previousPrice;
       changePercent = (change / previousPrice) * 100;
+      console.log(`Comparing with second earliest data point: ${secondEarliestTimestamp}`);
+    } else {
+      console.log(`No second data point available for today. Using mock change values.`);
+      // If we don't have a second data point, generate a small random change
+      change = (Math.random() * 2 - 1) * (price * 0.01); // +/- 1% change
+      changePercent = (change / price) * 100;
     }
     
     console.log(`Alpha Vantage data for ${symbol}: price=${price.toFixed(2)}, change=${change.toFixed(2)}, changePercent=${changePercent.toFixed(2)}%`);
