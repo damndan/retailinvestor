@@ -34,8 +34,8 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
     const latestTimestamp = Object.keys(timeSeriesData)[0]; // First key is the most recent
     const latestData = timeSeriesData[latestTimestamp];
     
-    // Extract the data from the most recent data point
-    const price = parseFloat(latestData['4. close'] || 0);
+    // Extract the open price from the most recent data point
+    const price = parseFloat(latestData['1. open'] || 0);
     
     // For change, we need to compare with the previous data point
     const previousTimestamp = Object.keys(timeSeriesData)[1]; // Second key is the previous minute
@@ -44,7 +44,7 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
     
     if (previousTimestamp) {
       const previousData = timeSeriesData[previousTimestamp];
-      const previousPrice = parseFloat(previousData['4. close'] || 0);
+      const previousPrice = parseFloat(previousData['1. open'] || 0);
       change = price - previousPrice;
       changePercent = (change / previousPrice) * 100;
     }
