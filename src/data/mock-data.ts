@@ -94,65 +94,65 @@ export const marketOverviewData = {
   indices: [
     {
       name: "S&P 500",
-      value: 5021.84,
-      prevValue: 5000.47,
-      change: 0.43
+      value: 5628.87,
+      prevValue: 5615.32,
+      change: 0.24
     },
     {
       name: "NASDAQ",
-      value: 15845.24,
-      prevValue: 15712.75,
-      change: 0.84
+      value: 18286.97,
+      prevValue: 18172.60,
+      change: 0.63
     },
     {
       name: "DOW JONES",
-      value: 38239.66,
-      prevValue: 38143.33,
-      change: 0.25
+      value: 42185.29,
+      prevValue: 42118.96,
+      change: 0.16
     }
   ],
   chart: [
     {
       date: "Apr 1",
-      sp500: 4900,
-      nasdaq: 15200,
-      dowjones: 37800
+      sp500: 5200,
+      nasdaq: 16800,
+      dowjones: 39250
     },
     {
       date: "Apr 5",
-      sp500: 4930,
-      nasdaq: 15350,
-      dowjones: 37950
+      sp500: 5275,
+      nasdaq: 17100,
+      dowjones: 39500
     },
     {
       date: "Apr 10",
-      sp500: 4905,
-      nasdaq: 15300,
-      dowjones: 37900
+      sp500: 5320,
+      nasdaq: 17300,
+      dowjones: 39800
     },
     {
       date: "Apr 15",
-      sp500: 4950,
-      nasdaq: 15400,
-      dowjones: 38000
+      sp500: 5380,
+      nasdaq: 17500,
+      dowjones: 40200
     },
     {
       date: "Apr 20",
-      sp500: 4980,
-      nasdaq: 15600,
-      dowjones: 38100
+      sp500: 5450,
+      nasdaq: 17800,
+      dowjones: 41000
     },
     {
       date: "Apr 25",
-      sp500: 5000,
-      nasdaq: 15750,
-      dowjones: 38150
+      sp500: 5550,
+      nasdaq: 18000,
+      dowjones: 41600
     },
     {
       date: "Apr 30",
-      sp500: 5022,
-      nasdaq: 15845,
-      dowjones: 38240
+      sp500: 5629,
+      nasdaq: 18287,
+      dowjones: 42185
     }
   ]
 };
