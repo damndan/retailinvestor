@@ -2,8 +2,9 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Info, TrendingDown, TrendingUp } from "lucide-react";
+import { Calendar, Info, TrendingDown, TrendingUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { format } from "date-fns";
 
 interface StockCardProps {
   stock: {
@@ -15,6 +16,7 @@ interface StockCardProps {
     recommendation: "buy" | "sell" | "hold";
     confidence: number;
     analysis: string;
+    date?: Date;
   };
   className?: string;
 }
@@ -105,6 +107,14 @@ export function StockCard({ stock, className }: StockCardProps) {
               {confidenceLevel()} ({stock.confidence}%)
             </Badge>
           </div>
+          
+          {stock.date && (
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>as of {format(new Date(stock.date), "PP")}</span>
+            </div>
+          )}
+          
           <p className="text-sm text-muted-foreground leading-relaxed">
             {stock.analysis.length > 120 ? `${stock.analysis.substring(0, 120)}...` : stock.analysis}
           </p>
