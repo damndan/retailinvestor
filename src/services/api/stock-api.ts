@@ -5,8 +5,8 @@
 export const fetchStockPrice = async (symbol: string): Promise<{ price: number; change: number; changePercent: number }> => {
   try {
     // Alpha Vantage API endpoint with your API key
-    // Note: Replace 'demo' with your actual API key in a production environment
-    const apiKey = 'demo';
+    // Replace this with your actual Alpha Vantage API key
+    const apiKey = 'YOUR_ALPHA_VANTAGE_API_KEY';
     const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
     
     const response = await fetch(url);
@@ -18,7 +18,7 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
     const data = await response.json();
     
     // Check if we have an error or no data
-    if (data['Error Message'] || !data['Global Quote']) {
+    if (data['Error Message'] || !data['Global Quote'] || Object.keys(data['Global Quote']).length === 0) {
       console.warn('Alpha Vantage API error or no data:', data);
       
       // If we get an error or no data, fall back to the mock implementation
