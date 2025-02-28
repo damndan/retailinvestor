@@ -18,6 +18,14 @@ export function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [noDataForDate, setNoDataForDate] = useState(false);
 
+  // Check if a date is today (same year, month, and day)
+  const isToday = (date: Date): boolean => {
+    const today = new Date();
+    return date.getDate() === today.getDate() && 
+           date.getMonth() === today.getMonth() && 
+           date.getFullYear() === today.getFullYear();
+  };
+
   // Update recommendations whenever date changes
   useEffect(() => {
     const filterRecommendationsByDate = () => {
@@ -25,6 +33,15 @@ export function Dashboard() {
       
       try {
         if (date) {
+          // For today's date (Feb 28), always show all recommendations
+          if (isToday(date)) {
+            setBuyRecs(buyRecommendations);
+            setSellRecs(sellRecommendations);
+            setNoDataForDate(false);
+            setLoading(false);
+            return;
+          }
+
           // Format the selected date as YYYY-MM for comparison
           const selectedDateStr = format(date, 'yyyy-MM');
           

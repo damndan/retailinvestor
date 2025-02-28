@@ -47,9 +47,23 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
     fetchData();
   }, [selectedDate]);
 
+  // Check if a date is today (same year, month, and day)
+  const isToday = (date: Date): boolean => {
+    const today = new Date();
+    return date.getDate() === today.getDate() && 
+           date.getMonth() === today.getMonth() && 
+           date.getFullYear() === today.getFullYear();
+  };
+
   // Filter chart data based on selected date
   const filteredChartData = selectedDate 
     ? chartData.filter(data => {
+        // For today's date, always show data
+        if (isToday(selectedDate)) {
+          // Find the most recent data point for today
+          return true;
+        }
+
         // Parse the chart data date string (format: "Jan 2019")
         const [month, year] = data.date.split(' ');
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -68,7 +82,10 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
     : chartData; // When no date is selected, show all chart data
 
   // If there's a selected date but no matching chart data, show a message
-  const noDataForSelectedDate = selectedDate && filteredChartData.length === 0;
+  // For today's date, we never show "no data" message
+  const noDataForSelectedDate = selectedDate && 
+                               filteredChartData.length === 0 && 
+                               !isToday(selectedDate);
 
   return (
     <Card className="glass-card border">
