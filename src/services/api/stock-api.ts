@@ -4,7 +4,7 @@
 // Fetch current stock price from Yahoo Finance API
 export const fetchStockPrice = async (symbol: string): Promise<{ price: number; change: number; changePercent: number }> => {
   try {
-    // Using a public API that doesn't require API keys to fetch Yahoo Finance data
+    // Using Yahoo Finance API to fetch stock data
     const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`);
     
     if (!response.ok) {
@@ -33,6 +33,25 @@ export const fetchStockPrice = async (symbol: string): Promise<{ price: number; 
     };
   } catch (error) {
     console.error(`Error fetching stock data for ${symbol}:`, error);
+    throw error;
+  }
+};
+
+// Optional: Add function to fetch historical data
+export const fetchHistoricalData = async (symbol: string, period = '1mo'): Promise<any> => {
+  try {
+    // Using Yahoo Finance API to fetch historical data
+    const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=${period}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    return data.chart.result[0];
+  } catch (error) {
+    console.error(`Error fetching historical data for ${symbol}:`, error);
     throw error;
   }
 };

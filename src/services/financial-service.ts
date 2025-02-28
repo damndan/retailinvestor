@@ -2,7 +2,7 @@
 // Main financial service that re-exports all services
 
 // Re-export types
-export { 
+export type { 
   MarketIndex, 
   ChartData, 
   StockRecommendation 
@@ -16,7 +16,8 @@ export {
 
 // Re-export stock API functions
 export { 
-  fetchStockPrice 
+  fetchStockPrice,
+  fetchHistoricalData
 } from './api/stock-api';
 
 // Re-export recommendation services
