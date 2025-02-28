@@ -28,7 +28,7 @@ export const buyRecommendations = [
   {
     symbol: "AMD",
     name: "Advanced Micro Devices, Inc.",
-    price: 164.75,
+    price: 178.63,
     change: 2.18,
     changePercent: 1.34,
     recommendation: "buy" as const,
