@@ -9,22 +9,10 @@ import { useEffect, useState } from "react";
 
 // Mock data
 import { buyRecommendations, sellRecommendations } from "@/data/mock-data";
-import { updateRecommendationsWithRealData } from "@/services/financial-service";
+import { fetchRecommendations, StockRecommendation } from "@/services/financial-service";
 
 interface DashboardProps {
   className?: string;
-}
-
-// Define a generic StockRecommendation type that can handle all recommendation types
-interface StockRecommendation {
-  symbol: string;
-  name: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  recommendation: "buy" | "sell" | "hold";
-  confidence: number;
-  analysis: string;
 }
 
 export function Dashboard({ className }: DashboardProps) {
@@ -37,13 +25,10 @@ export function Dashboard({ className }: DashboardProps) {
       try {
         setIsLoading(true);
         
-        // Update buy recommendations with real data
-        const updatedBuyStocks = await updateRecommendationsWithRealData(buyRecommendations);
-        setBuyStocks(updatedBuyStocks);
-        
-        // Update sell recommendations with real data
-        const updatedSellStocks = await updateRecommendationsWithRealData(sellRecommendations);
-        setSellStocks(updatedSellStocks);
+        // Fetch recommendations with real-time data
+        const recommendations = await fetchRecommendations();
+        setBuyStocks(recommendations.buy);
+        setSellStocks(recommendations.sell);
       } catch (error) {
         console.error("Failed to fetch real stock data:", error);
         // Fallback to mock data
