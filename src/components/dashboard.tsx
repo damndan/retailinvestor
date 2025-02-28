@@ -1,9 +1,8 @@
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StockCard } from "@/components/stock-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Summary } from "@/components/summary";
-import { MarketOverview } from "@/components/market-overview";
+import { MarketOverview } from "@/components/market/market-overview";
 import { cn } from "@/lib/utils";
 
 // Mock data
