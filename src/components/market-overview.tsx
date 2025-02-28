@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { BarChart, LineGraph } from "lucide-react";
+import { BarChart, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -193,7 +193,7 @@ export function MarketOverview({ data }: MarketOverviewProps) {
                 {index.change > 0 ? (
                   <TrendingUp className="h-3 w-3 mr-0.5" />
                 ) : (
-                  <LineGraph className="h-3 w-3 mr-0.5" />
+                  <TrendingDown className="h-3 w-3 mr-0.5" />
                 )}
                 <span>{index.change > 0 ? "+" : ""}{index.change.toFixed(2)}%</span>
               </div>
