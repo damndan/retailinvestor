@@ -6,9 +6,9 @@ export const buyRecommendations = [
   {
     symbol: "PLTR",
     name: "Palantir Technologies Inc.",
-    price: 24.38,
-    change: -0.69,
-    changePercent: -2.75,
+    price: 26.16,
+    change: 0.55,
+    changePercent: 2.15,
     recommendation: "buy" as const,
     confidence: 88,
     analysis: "Strong growth in government contracts and expansion into commercial sector. Increasing adoption of AI platforms positions Palantir well for future growth.",
@@ -17,9 +17,9 @@ export const buyRecommendations = [
   {
     symbol: "SOFI",
     name: "SoFi Technologies, Inc.",
-    price: 7.73,
-    change: -0.05,
-    changePercent: -0.64,
+    price: 7.41,
+    change: 0.01,
+    changePercent: 0.14,
     recommendation: "buy" as const,
     confidence: 85,
     analysis: "Digital banking growth, expanding product offerings, and improving profitability metrics. Bank charter and student loan recovery are positive catalysts.",
@@ -28,9 +28,9 @@ export const buyRecommendations = [
   {
     symbol: "AMD",
     name: "Advanced Micro Devices, Inc.",
-    price: 177.66,
-    change: 0.98,
-    changePercent: 0.55,
+    price: 174.74,
+    change: 3.46,
+    changePercent: 2.02,
     recommendation: "buy" as const,
     confidence: 92,
     analysis: "Market share gains against Intel, strong data center growth, and AI chip expansion make AMD a compelling investment in the semiconductor space.",
@@ -39,9 +39,9 @@ export const buyRecommendations = [
   {
     symbol: "CRSR",
     name: "Corsair Gaming, Inc.",
-    price: 11.61,
-    change: 0.12,
-    changePercent: 1.04,
+    price: 11.35,
+    change: 0.10,
+    changePercent: 0.89,
     recommendation: "buy" as const,
     confidence: 84,
     analysis: "Leading gaming peripherals company with strong brand loyalty. Expanding product portfolio and potential gaming market recovery provide upside potential.",
@@ -54,9 +54,9 @@ export const sellRecommendations = [
   {
     symbol: "GME",
     name: "GameStop Corp.",
-    price: 13.40,
-    change: -0.50,
-    changePercent: -3.60,
+    price: 13.79,
+    change: 0.37,
+    changePercent: 2.76,
     recommendation: "sell" as const,
     confidence: 78,
     analysis: "Challenging retail environment, declining store traffic, and lack of clear turnaround strategy. Despite meme stock status, fundamentals remain weak.",
@@ -65,9 +65,9 @@ export const sellRecommendations = [
   {
     symbol: "AMC",
     name: "AMC Entertainment Holdings, Inc.",
-    price: 3.80,
-    change: -0.16,
-    changePercent: -4.04,
+    price: 3.74,
+    change: 0.08,
+    changePercent: 2.19,
     recommendation: "sell" as const,
     confidence: 76,
     analysis: "High debt burden, ongoing cinema attendance challenges, and dilution of shareholders makes AMC's long-term viability questionable.",
@@ -87,9 +87,9 @@ export const sellRecommendations = [
   {
     symbol: "HOOD",
     name: "Robinhood Markets, Inc.",
-    price: 19.90,
-    change: -0.51,
-    changePercent: -2.50,
+    price: 20.09,
+    change: -0.05,
+    changePercent: -0.25,
     recommendation: "hold" as const,
     confidence: 62,
     analysis: "Volatile trading revenue, regulatory challenges, and increasing competition in the retail brokerage space. However, growing crypto trading and cash management services provide some optimism.",
@@ -102,21 +102,21 @@ export const marketOverviewData = {
   indices: [
     {
       name: "S&P 500",
-      value: 5370.71,
-      prevValue: 5362.12,
-      change: 0.16
+      value: 5555.08,
+      prevValue: 5543.22,
+      change: 0.21
     },
     {
       name: "NASDAQ",
-      value: 17185.33,
-      prevValue: 17167.10,
-      change: 0.11
+      value: 17683.98,
+      prevValue: 17642.97,
+      change: 0.23
     },
     {
       name: "DOW JONES",
-      value: 39807.37,
-      prevValue: 39806.77,
-      change: 0.00
+      value: 40816.94,
+      prevValue: 40753.54,
+      change: 0.16
     }
   ],
   chart: [
@@ -188,9 +188,9 @@ export const marketOverviewData = {
     },
     {
       date: "Jul 2024",
-      sp500: 5371,
-      nasdaq: 17185,
-      dowjones: 39807
+      sp500: 5555,
+      nasdaq: 17684,
+      dowjones: 40817
     }
   ]
 };
