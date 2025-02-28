@@ -12,38 +12,12 @@ import {
   ChartData 
 } from "@/services/financial-service";
 import { marketOverviewData } from "@/data/mock-data";
-import { format } from "date-fns";
 
-interface MarketOverviewProps {
-  selectedDate?: Date;
-}
-
-export function MarketOverview({ selectedDate }: MarketOverviewProps) {
+export function MarketOverview() {
   const [activeIndex, setActiveIndex] = useState("sp500");
   const [indices, setIndices] = useState<MarketIndex[]>(marketOverviewData.indices);
   const [chartData, setChartData] = useState<ChartData[]>(marketOverviewData.chart);
   const [isLoading, setIsLoading] = useState(true);
-  const [originalChartData, setOriginalChartData] = useState<ChartData[]>(marketOverviewData.chart);
-
-  const getAdjustedChartData = (allData: ChartData[], date?: Date): ChartData[] => {
-    if (!date) return allData;
-    
-    const selectedMonth = date.getMonth();
-    const selectedYear = date.getFullYear();
-    
-    return allData.filter(dataPoint => {
-      const [monthStr, yearStr] = dataPoint.date.split(' ');
-      const month = getMonthFromString(monthStr);
-      const year = parseInt(yearStr);
-      
-      return (year < selectedYear) || (year === selectedYear && month <= selectedMonth);
-    });
-  };
-
-  const getMonthFromString = (monthStr: string): number => {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return months.indexOf(monthStr);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,14 +26,14 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
         const marketIndices = await fetchMarketIndices();
         setIndices(marketIndices);
         
+        // Generate chart data based on current indices
         const generatedChartData = generateChartData(marketIndices);
         setChartData(generatedChartData);
-        setOriginalChartData(generatedChartData);
       } catch (error) {
         console.error("Failed to fetch market data:", error);
+        // Fallback to mock data
         setIndices(marketOverviewData.indices);
         setChartData(marketOverviewData.chart);
-        setOriginalChartData(marketOverviewData.chart);
       } finally {
         setIsLoading(false);
       }
@@ -67,13 +41,6 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
 
     fetchData();
   }, []);
-
-  useEffect(() => {
-    if (originalChartData.length > 0) {
-      const adjustedData = getAdjustedChartData(originalChartData, selectedDate);
-      setChartData(adjustedData);
-    }
-  }, [selectedDate, originalChartData]);
 
   return (
     <Card className="glass-card border">
@@ -86,11 +53,7 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
           </CardTitle>
           <MarketIndexButtons activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
         </div>
-        <CardDescription>
-          {selectedDate 
-            ? `Performance as of ${format(selectedDate, "PP")}`
-            : "Major indices performance"}
-        </CardDescription>
+        <CardDescription>Major indices performance</CardDescription>
       </CardHeader>
       <CardContent className="px-3">
         <MarketChart data={chartData} activeIndex={activeIndex} />
