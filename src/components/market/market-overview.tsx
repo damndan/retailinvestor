@@ -23,6 +23,7 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
   const [chartData, setChartData] = useState<ChartData[]>(marketOverviewData.chart);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch market data when component mounts or selectedDate changes
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,7 +65,7 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
         // Compare year and month only
         return chartDate.getFullYear() === selectedYear && chartDate.getMonth() === selectedMonth;
       })
-    : chartData;
+    : chartData; // When no date is selected, show all chart data
 
   // If there's a selected date but no matching chart data, show a message
   const noDataForSelectedDate = selectedDate && filteredChartData.length === 0;

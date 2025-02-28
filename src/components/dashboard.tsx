@@ -18,6 +18,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [noDataForDate, setNoDataForDate] = useState(false);
 
+  // Update recommendations whenever date changes
   useEffect(() => {
     const filterRecommendationsByDate = () => {
       setLoading(true);
@@ -45,7 +46,7 @@ export function Dashboard() {
           // Set flag if no data for the selected date
           setNoDataForDate(filteredBuyRecs.length === 0 && filteredSellRecs.length === 0);
         } else {
-          // If no date selected, show all recommendations
+          // If no date selected (including reset to null), show all recommendations
           setBuyRecs(buyRecommendations);
           setSellRecs(sellRecommendations);
           setNoDataForDate(false);
@@ -55,6 +56,7 @@ export function Dashboard() {
         // Fallback to all recommendations
         setBuyRecs(buyRecommendations);
         setSellRecs(sellRecommendations);
+        setNoDataForDate(false);
       } finally {
         setLoading(false);
       }
@@ -63,32 +65,50 @@ export function Dashboard() {
     filterRecommendationsByDate();
   }, [date]);
 
+  // Handler for clearing date selection
+  const handleClearDate = () => {
+    setDate(null);
+  };
+
   return (
     <div className="container py-6 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h1 className="text-2xl font-bold tracking-tight">Financial Dashboard</h1>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-[240px] justify-start text-left font-normal",
-                !date && "text-muted-foreground"
-              )}
+        <div className="flex items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[240px] justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : "Filter by date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          
+          {date && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleClearDate}
+              className="h-10"
             >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : "Filter by date"}
+              Reset
             </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="end">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
