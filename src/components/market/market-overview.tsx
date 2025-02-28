@@ -9,7 +9,9 @@ import {
   fetchMarketIndices, 
   generateChartData, 
   MarketIndex,
-  ChartData 
+  ChartData,
+  shouldRefreshData,
+  markDataRefreshed
 } from "@/services/financial-service";
 import { marketOverviewData } from "@/data/mock-data";
 
@@ -22,8 +24,9 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
   const [indices, setIndices] = useState<MarketIndex[]>(marketOverviewData.indices);
   const [chartData, setChartData] = useState<ChartData[]>(marketOverviewData.chart);
   const [isLoading, setIsLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  // Fetch market data when component mounts or selectedDate changes
+  // Fetch market data when component mounts, selectedDate changes, or when a new day begins
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,6 +37,10 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
         // Generate chart data based on current indices
         const generatedChartData = generateChartData(marketIndices);
         setChartData(generatedChartData);
+        
+        // Mark data as refreshed
+        markDataRefreshed();
+        setLastUpdated(new Date());
       } catch (error) {
         console.error("Failed to fetch market data:", error);
         // Fallback to mock data
@@ -44,8 +51,27 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
       }
     };
 
-    fetchData();
+    // Check if we need to refresh data (new day)
+    if (shouldRefreshData()) {
+      console.log("New day detected, refreshing market data...");
+      fetchData();
+    } else {
+      fetchData();
+    }
   }, [selectedDate]);
+
+  // Set up a timer to check for data refresh needs
+  useEffect(() => {
+    // Check every 5 minutes if we need to refresh data
+    const intervalId = setInterval(() => {
+      if (shouldRefreshData()) {
+        console.log("Data refresh needed, reloading component...");
+        setLastUpdated(new Date()); // This will trigger the data fetch
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+    
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Check if a date is today (same year, month, and day)
   const isToday = (date: Date): boolean => {
@@ -103,6 +129,9 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
             ? `Market performance on ${selectedDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long' })}`
             : "Major indices performance"
           }
+          <span className="text-xs ml-2 text-muted-foreground">
+            (Last updated: {lastUpdated.toLocaleTimeString()})
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent className="px-3">
