@@ -1,4 +1,3 @@
-
 import { cn } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
 
@@ -27,7 +26,9 @@ export function MarketIndices({ indices }: MarketIndicesProps) {
             ) : (
               <TrendingDown className="h-3 w-3 mr-0.5" />
             )}
-            <span>{index.change > 0 ? "+" : ""}{index.change.toFixed(2)}%</span>
+            <span>
+              {index.change > 0 ? "+" : ""}{index.change.toFixed(2)} ({index.change > 0 ? "+" : ""}{((index.change / index.prevValue) * 100).toFixed(2)}%)
+            </span>
           </div>
         </div>
       ))}

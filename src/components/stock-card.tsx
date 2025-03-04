@@ -1,8 +1,7 @@
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { CalendarDays, Info, TrendingDown, TrendingUp } from "lucide-react";
+import { CalendarDays, Info, Link, LinkIcon, TrendingDown, TrendingUp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface StockCardProps {
@@ -13,9 +12,12 @@ interface StockCardProps {
     change: number;
     changePercent: number;
     recommendation: "buy" | "sell" | "hold";
-    confidence: number;
-    analysis: string;
+    confidence?: number;
+    analysis?: string;
+    targetPrice?: number;
     date?: string;
+    isRetailFavorite?: boolean;
+    sources?: { name: string; url: string }[];
   };
   selectedDate?: Date | null;
   className?: string;
@@ -25,14 +27,16 @@ export function StockCard({ stock, selectedDate, className }: StockCardProps) {
   const isPositive = stock.change >= 0;
   
   const confidenceLevel = () => {
-    if (stock.confidence >= 80) return "High";
-    if (stock.confidence >= 50) return "Medium";
+    const confidence = stock.confidence || 0;
+    if (confidence >= 80) return "High";
+    if (confidence >= 50) return "Medium";
     return "Low";
   };
   
   const confidenceColor = () => {
-    if (stock.confidence >= 80) return "bg-success/10 text-success";
-    if (stock.confidence >= 50) return "bg-warning/10 text-warning";
+    const confidence = stock.confidence || 0;
+    if (confidence >= 80) return "bg-success/10 text-success";
+    if (confidence >= 50) return "bg-warning/10 text-warning";
     return "bg-muted/30 text-muted-foreground";
   };
   
@@ -104,12 +108,32 @@ export function StockCard({ stock, selectedDate, className }: StockCardProps) {
         </div>
         
         <div className="space-y-3 mt-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Confidence</span>
-            <Badge variant="outline" className={cn("font-normal", confidenceColor())}>
-              {confidenceLevel()} ({stock.confidence}%)
-            </Badge>
-          </div>
+          {stock.confidence !== undefined && (
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Confidence</span>
+              <Badge variant="outline" className={cn("font-normal", confidenceColor())}>
+                {confidenceLevel()} ({stock.confidence}%)
+              </Badge>
+            </div>
+          )}
+          
+          {stock.targetPrice !== undefined && (
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Target Price</span>
+              <Badge variant="outline" className={cn("font-normal", isPositive ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive")}>
+                ${stock.targetPrice.toFixed(2)}
+              </Badge>
+            </div>
+          )}
+          
+          {stock.isRetailFavorite && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Retail Sentiment</span>
+              <Badge variant="outline" className="font-normal bg-blue-500/10 text-blue-500">
+                Retail Favorite
+              </Badge>
+            </div>
+          )}
           
           {formattedDate && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -118,9 +142,41 @@ export function StockCard({ stock, selectedDate, className }: StockCardProps) {
             </div>
           )}
           
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {stock.analysis.length > 120 ? `${stock.analysis.substring(0, 120)}...` : stock.analysis}
-          </p>
+          {stock.analysis && (
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {stock.analysis.length > 120 ? `${stock.analysis.substring(0, 120)}...` : stock.analysis}
+            </p>
+          )}
+
+          {stock.sources && stock.sources.length > 0 && (
+            <div className="mt-2">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                <LinkIcon className="h-3 w-3" />
+                <span>Sources:</span>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {stock.sources.map((source, index) => (
+                  <TooltipProvider key={index}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <a 
+                          href={source.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="inline-flex items-center text-xs bg-background hover:bg-muted rounded-full px-2 py-0.5 border border-border"
+                        >
+                          {source.name}
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p className="text-xs">View source at {source.name}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

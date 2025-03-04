@@ -1,19 +1,21 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart } from "lucide-react";
+import { BarChart, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import { MarketChart } from "./market-chart";
-import { MarketIndexButtons } from "./market-index-buttons";
 import { MarketIndices } from "./market-indices";
 import { 
   fetchMarketIndices, 
+  refreshMarketIndices,
   generateChartData, 
   MarketIndex,
   ChartData,
   shouldRefreshData,
   markDataRefreshed
 } from "@/services/financial-service";
-import { marketOverviewData } from "@/data/mock-data";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface MarketOverviewProps {
   selectedDate?: Date | null;
@@ -21,31 +23,33 @@ interface MarketOverviewProps {
 
 export function MarketOverview({ selectedDate }: MarketOverviewProps) {
   const [activeIndex, setActiveIndex] = useState("sp500");
-  const [indices, setIndices] = useState<MarketIndex[]>(marketOverviewData.indices);
-  const [chartData, setChartData] = useState<ChartData[]>(marketOverviewData.chart);
+  // Initialize with empty arrays instead of mock data
+  const [indices, setIndices] = useState<MarketIndex[]>([]);
+  const [chartData, setChartData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [refreshing, setRefreshing] = useState(false);
 
   // Fetch market data when component mounts, selectedDate changes, or when a new day begins
   useEffect(() => {
-    const fetchData = async () => {
+    const loadMarketData = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const marketIndices = await fetchMarketIndices();
-        setIndices(marketIndices);
+        const fetchedIndices = await fetchMarketIndices();
+        setIndices(fetchedIndices);
         
-        // Generate chart data based on current indices
-        const generatedChartData = generateChartData(marketIndices);
-        setChartData(generatedChartData);
+        // Update to handle the async function
+        const fetchedChartData = await generateChartData();
+        setChartData(fetchedChartData);
         
         // Mark data as refreshed
         markDataRefreshed();
         setLastUpdated(new Date());
       } catch (error) {
         console.error("Failed to fetch market data:", error);
-        // Fallback to mock data
-        setIndices(marketOverviewData.indices);
-        setChartData(marketOverviewData.chart);
+        // Initialize with empty arrays instead of falling back to mock data
+        setIndices([]);
+        setChartData([]);
       } finally {
         setIsLoading(false);
       }
@@ -54,11 +58,31 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
     // Check if we need to refresh data (new day)
     if (shouldRefreshData()) {
       console.log("New day detected, refreshing market data...");
-      fetchData();
+      loadMarketData();
     } else {
-      fetchData();
+      loadMarketData();
     }
   }, [selectedDate]);
+
+  // Handler for refreshing market data
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      // Force refresh of market indices
+      const freshIndices = await refreshMarketIndices();
+      setIndices(freshIndices);
+      
+      // Generate new chart data based on fresh indices
+      const freshChartData = await generateChartData();
+      setChartData(freshChartData);
+      
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error("Error refreshing market data:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   // Set up a timer to check for data refresh needs
   useEffect(() => {
@@ -72,6 +96,14 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
     
     return () => clearInterval(intervalId);
   }, []);
+
+  // Debug effect
+  useEffect(() => {
+    if (chartData.length > 0) {
+      console.log("Debug - activeIndex:", activeIndex);
+      console.log("Debug - chart data sample:", chartData[0]);
+    }
+  }, [activeIndex, chartData]);
 
   // Check if a date is today (same year, month, and day)
   const isToday = (date: Date): boolean => {
@@ -113,6 +145,11 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
                                filteredChartData.length === 0 && 
                                !isToday(selectedDate);
 
+  // Format large numbers with commas
+  const formatNumber = (num: number) => {
+    return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  };
+
   return (
     <Card className="glass-card border">
       <CardHeader className="pb-2">
@@ -122,7 +159,6 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
             Market Overview
             {isLoading && <span className="text-xs text-muted-foreground ml-2">(Loading...)</span>}
           </CardTitle>
-          <MarketIndexButtons activeIndex={activeIndex} setActiveIndex={setActiveIndex} />
         </div>
         <CardDescription>
           {selectedDate 
@@ -135,17 +171,52 @@ export function MarketOverview({ selectedDate }: MarketOverviewProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="px-3">
-        {noDataForSelectedDate ? (
+        {isLoading ? (
+          <div className="h-[180px] flex items-center justify-center text-muted-foreground">
+            Loading market data...
+          </div>
+        ) : noDataForSelectedDate ? (
           <div className="h-[180px] flex items-center justify-center text-muted-foreground">
             No market data available for the selected date
           </div>
+        ) : indices.length === 0 ? (
+          <div className="h-[180px] flex items-center justify-center text-muted-foreground">
+            No market data available. Please try again later.
+          </div>
         ) : (
-          <MarketChart 
-            data={filteredChartData.length > 0 ? filteredChartData : chartData} 
-            activeIndex={activeIndex} 
-          />
+          <Tabs defaultValue="sp500" onValueChange={setActiveIndex} value={activeIndex}>
+            {indices.map((index) => {
+              // Normalize index name to match the expected format in the chart component
+              let indexValue = index.name.toLowerCase().replace(/\s+/g, '');
+              
+              // Special case for Dow Jones to match "dowjones" in the chart data
+              if (index.name === "Dow Jones") {
+                indexValue = "dowjones";
+              }
+              
+              const isPositive = index.change >= 0;
+              
+              return (
+                <TabsContent key={index.name} value={indexValue} className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-2xl font-bold">{formatNumber(index.value)}</h3>
+                      <div className={`flex items-center ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                        <span className="flex items-center">
+                          {isPositive ? <ArrowUpIcon className="h-4 w-4 mr-1" /> : <ArrowDownIcon className="h-4 w-4 mr-1" />}
+                          {isPositive ? '+' : ''}{index.change.toFixed(2)} ({isPositive ? '+' : ''}{((index.change / index.prevValue) * 100).toFixed(2)}%)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <MarketChart data={filteredChartData} activeIndex={indexValue} />
+                </TabsContent>
+              );
+            })}
+          </Tabs>
         )}
-        <MarketIndices indices={indices} />
+        {indices.length > 0 && <MarketIndices indices={indices} />}
       </CardContent>
     </Card>
   );

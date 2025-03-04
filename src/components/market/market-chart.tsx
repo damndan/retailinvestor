@@ -1,4 +1,3 @@
-
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface MarketChartProps {
@@ -12,6 +11,9 @@ interface MarketChartProps {
 }
 
 export function MarketChart({ data, activeIndex }: MarketChartProps) {
+  console.log("MarketChart - activeIndex:", activeIndex);
+  console.log("MarketChart - data sample:", data.length > 0 ? data[0] : "No data");
+  
   const getLineColor = (value: string) => {
     if (value === "sp500") return "hsl(var(--info))";
     if (value === "nasdaq") return "hsl(var(--success))";

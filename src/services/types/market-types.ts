@@ -1,4 +1,3 @@
-
 // Types for market and financial data
 
 export interface MarketIndex {
@@ -22,7 +21,10 @@ export interface StockRecommendation {
   change: number;
   changePercent: number;
   recommendation: 'buy' | 'sell' | 'hold';
-  confidence: number;
-  analysis: string;
+  confidence?: number;
+  analysis?: string;
+  targetPrice?: number; // Target price for the stock
   date?: string; // Date when this recommendation was made
+  isRetailFavorite?: boolean; // Indicates if this is a popular stock among retail investors
+  sources?: { name: string; url: string }[];
 }
